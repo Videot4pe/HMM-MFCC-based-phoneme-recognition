@@ -1,0 +1,34 @@
+{
+  "name": "the-diplom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "audio-analyser": "^1.0.2",
+    "child_process": "^1.0.2",
+    "express": "^4.17.1",
+    "ezfft": "^1.0.1",
+    "ffmpeg": "0.0.4",
+    "fft": "^0.2.1",
+    "fft-js": "0.0.12",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs": "0.0.1-security",
+    "hidden-markov-model": "0.0.1",
+    "kmeans-js": "^0.1.2",
+    "mary-markov": "^2.0.0",
+    "mfcc": "0.0.3",
+    "node-kmeans": "^1.1.9",
+    "node-mfcc": "0.0.2",
+    "pcm-extract": "^0.1.0",
+    "readline": "^1.3.0",
+    "skmeans": "^0.11.3",
+    "socket.io": "^2.3.0",
+    "sound-parameters-extractor": "^1.4.0",
+    "wavefile": "^11.0.0"
+  }
+}
