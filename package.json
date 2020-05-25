@@ -11,6 +11,7 @@
   "dependencies": {
     "audio-analyser": "^1.0.2",
     "child_process": "^1.0.2",
+    "diagrams": "^0.11.0",
     "express": "^4.17.1",
     "ezfft": "^1.0.1",
     "ffmpeg": "0.0.4",
@@ -19,6 +20,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "hidden-markov-model": "0.0.1",
+    "json-to-plantuml": "0.0.9",
     "kmeans-js": "^0.1.2",
     "mary-markov": "^2.0.0",
     "mfcc": "0.0.3",

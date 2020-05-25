@@ -32,30 +32,38 @@ async function getTrainedModels()
     for (let i = 0; i < signal.length; i++)
         for (let j of signal[i])
     	   test.push(j);
-
+    console.log('test');
     let clusters = {};
+    //console.log(JSON.stringify(test));
     clusters = await kmeans(test);
-
+    console.log('clusters');
+    //console.log(JSON.stringify(clusters));
     let models = trainModels(clusters, signal, counter);
+    console.log('models');
     testModels(models, clusters, counter);
 }
 
 async function testModels(models, clusters, counter)
 {
-    let signal = await(decode('./data/phonemes/second/г’/г’18.wav'));
+    let signal = await(decode('./data/phonemes/second/а/а73.wav'));
     let probs = recognize(models, clusters, signal);
     for (let i = 0; i < probs.length; i++)
-        console.log('(г.) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(15) + '%');
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
 
-    // signal = await(decode('./data/phonemes/second/и/и2.wav'));
-    // probs = recognize(models, clusters, signal);
-    // for (let i = 0; i < probs.length; i++)
-    //     console.log('(и) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(15) + '%');
-
-    signal = await(decode('./data/phonemes/first/а/а26.wav'));
+    signal = await(decode('./data/phonemes/second/а/а96.wav'));
     probs = recognize(models, clusters, signal);
     for (let i = 0; i < probs.length; i++)
-        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(15) + '%');
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
+
+    signal = await(decode('./data/phonemes/second/б’/б’541.wav'));
+    probs = recognize(models, clusters, signal);
+    for (let i = 0; i < probs.length; i++)
+        console.log('(б’) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
+
+    signal = await(decode('./data/phonemes/th/а/а65.wav'));
+    probs = recognize(models, clusters, signal);
+    for (let i = 0; i < probs.length; i++)
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
 }
 
 getTrainedModels();

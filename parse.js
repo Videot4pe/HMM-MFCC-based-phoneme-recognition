@@ -11,8 +11,8 @@ const rl = readline.createInterface({
 rl.question("Audiofile: ", function(audio) {
     rl.question("Json: ", function(info) {
     	getPhonemes(audio, info);
-    	getWords(audio, info);
-    	getSentences(audio, info);
+    	//getWords(audio, info);
+    	//getSentences(audio, info);
         rl.close();
     });
 });
@@ -50,7 +50,7 @@ function getWords(audio, info)
 		if (!fs.existsSync('./data/words/' + audio + '/' + wd.value + '/'))
 		    fs.mkdirSync('./data/words/' + audio + '/' + wd.value + '/');
 		let files = fs.readdirSync('./data/words/' + audio + '/' + wd.value  + '/');
-		let command = "ffmpeg -i ./data/audiofiles/" + audio + ".wav -acodec copy -ss " + wd.start + " -to " + wd.end + " ./data/words/" + audio + '/' + wd.value + '/' + wd.value + counter + ".wav";
+		let command = "ffmpeg -i ./data/audiofiles/" + audio + ".wav -acodec copy -ss " + wd.start + " -to " + wd.end + " ./data/words/" + audio + '/' + wd.value + counter + ".wav";
 		counter++;
 		let stdout = execSync(command);
 		//console.log(stdout);
@@ -70,7 +70,7 @@ function getSentences(audio, info)
 		if (!fs.existsSync('./data/sentences/' + audio + '/' + st.value + '/'))
 		    fs.mkdirSync('./data/sentences/' + audio + '/' + st.value + '/');
 		let files = fs.readdirSync('./data/sentences/' + audio + '/' + st.value + '/');
-		let command = "ffmpeg -i ./data/audiofiles/" + audio + ".wav -acodec copy -ss " + st.start + " -to " + st.end + " ./data/sentences/" + audio + '/' + st.value + '/' + st.value + counter + ".wav";
+		let command = "ffmpeg -i ./data/audiofiles/" + audio + ".wav -acodec copy -ss " + st.start + " -to " + st.end + " ./data/sentences/" + audio + '/' + st.value + counter + ".wav";
 		counter++;
 		let stdout = execSync(command);
 		//console.log(stdout);

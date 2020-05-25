@@ -1,4 +1,6 @@
 let decode = require('./lib/audiodecoder.js');
+const kmeans = require('./lib/kmeans.js');
+const trainModels = require('./lib/models.js');
 let {hmm, train, recognize} = require('./lib/hmmusage.js');
 
 const fs = require('fs');
@@ -9,26 +11,33 @@ let clusters = {};
 async function main()
 {    
     restoreModel();
-    let signal = await(decode('./data/phonemes/first/а/а9.wav'));
+
+    let signal = await(decode('./data/phonemes/second/а/а73.wav'));
     let probs = recognize(models, clusters, signal);
-    for (let i = 0; i < probs.length; i++)
-        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(3) + '%');
 
-    signal = await(decode('./data/phonemes/second/б’/б’10.wav'));
+    for (let i = 0; i < probs.length; i++)
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
+
+    signal = await(decode('./data/phonemes/second/а/а96.wav'));
     probs = recognize(models, clusters, signal);
     for (let i = 0; i < probs.length; i++)
-        console.log('(б.) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(3) + '%');
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
 
-    signal = await(decode('./data/phonemes/second/в/в0.wav'));
+    signal = await(decode('./data/phonemes/second/б’/б’541.wav'));
     probs = recognize(models, clusters, signal);
     for (let i = 0; i < probs.length; i++)
-        console.log('(в) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(3) + '%');
+        console.log('(б’) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
+
+    signal = await(decode('./data/phonemes/th/а/а65.wav'));
+    probs = recognize(models, clusters, signal);
+    for (let i = 0; i < probs.length; i++)
+        console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].alphaF.toFixed(30) + '%');
 }
 
 function restoreModel()
 {
 	let rawdata = fs.readFileSync('./models/model.json');
-	models = JSON.parse(rawdata);
+	let models = JSON.parse(rawdata);
 	let model = hmm();
 	for (let i = 0; i < Object.keys(models).length; i++)
 	{
