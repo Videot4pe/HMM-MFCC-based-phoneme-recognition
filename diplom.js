@@ -73,21 +73,22 @@ async function testModels(models, clusters, counter)
 	let signal = await(decode('./data/phonemes/Аудиозапись20.wav'));
 	let probz = recognizzzer(models, clusters, signal);
 
-	// parseProbz(probz, models);
-	// printMaxProb();
+	parseProbz(probz, models);
+	printMaxProb();
 
+	//console.log(probz['path']);
 	let probs = recognize(models, clusters, signal);
 	let index = soWhatIs(probs);
 	// for (let i = 0; i < probs.length; i++)
 	// 	console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
 	// console.log('(а) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
-	signal = await(decode('./data/phonemes/glav/а/а43.wav'));
+	signal = await(decode('./data/phonemes/г.wav'));
 	probs = recognize(models, clusters, signal);
 	index = soWhatIs(probs);
 	for (let i = 0; i < probs.length; i++)
-		console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(а) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+		console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	console.log('(г) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
 	// signal = await(decode('./data/phonemes/glav/и/и133.wav'));
 	// probs = recognize(models, clusters, signal);
@@ -138,6 +139,12 @@ async function testModels(models, clusters, counter)
 		console.log('(й) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
 	console.log('(й) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
+	signal = await(decode('./data/phonemes/glav/е/е.wav'));
+	probs = recognize(models, clusters, signal);
+	index = soWhatIs(probs);
+	for (let i = 0; i < probs.length; i++)
+		console.log('(е) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	console.log('(е) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 	// signal = await(decode('./data/phonemes/th/а/а36.wav'));
 	// probs = recognize(models, clusters, signal);
 	// index = soWhatIs(probs);
@@ -176,11 +183,11 @@ function printMaxProb()
 			stringss = probsAll[i].pth;
 			max[1] = probsAll[i].prob;
 		}
-		// if (probsAll[i].pth == 'главный')
-		// {
-		// 	stringsss = probsAll[i].pth;
-		// 	max[2] = probsAll[i].prob;
-		// }
+		if (probsAll[i].pth == 'еглавн')
+		{
+			stringsss = probsAll[i].pth;
+			max[2] = probsAll[i].prob;
+		}
 	}
 	console.log(strings, max[0], stringss, max[1], stringsss, max[2]);
 }
