@@ -11,7 +11,7 @@ const rl = readline.createInterface({
 rl.question("Audiofile: ", function(audio) {
     rl.question("Json: ", function(info) {
     	getPhonemes(audio, info);
-    	//getWords(audio, info);
+    	getWords(audio, info);
     	//getSentences(audio, info);
         rl.close();
     });
