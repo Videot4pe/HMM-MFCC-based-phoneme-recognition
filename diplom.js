@@ -1,6 +1,6 @@
 let decode = require('./lib/audiodecoder.js');
 const kmeans = require('./lib/kmeans.js');
-const {trainModels, recognize, recognizzzer} = require('./lib/models.js');
+const {trainModels, recognize, recognizzzer, linearRecognize} = require('./lib/models.js');
 let {hmm, train} = require('./lib/hmmusage.js');
 let HMM = require('./lib/hmm.js');
 const fs = require('fs');
@@ -70,99 +70,94 @@ async function getTrainedModels()
 
 async function testModels(models, clusters, counter)
 {
-	let signal = await(decode('./data/phonemes/Аудиозапись20.wav'));
-	let probz = recognizzzer(models, clusters, signal);
+	let folder = fs.readdirSync('./data/phonemes/test/');
+	for (let j of folder)
+	{
+		if (j == '.DS_Store')
+			continue;
+		
+		let signal = (await(decode('./data/phonemes/test/' + j)));
+		let probs = linearRecognize(models, clusters, signal);
+		let index = soWhatIs(probs);
+		// for (let i = 0; i < probs.length; i++)
+		// 	console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+		console.log('(' + j + ') Final probability of ' + index.path + ' = ' + 100 * index.prob.toFixed(5) + '%');
+	}
 
-	parseProbz(probz, models);
-	printMaxProb();
+	for (let j of folder)
+	{
+		if (j == '.DS_Store')
+			continue;
+		
+		let signal = (await(decode('./data/phonemes/test/' + j)));
+		let probs = recognizzzer(models, clusters, signal);
+		//let index = soWhatIsRecurs(probs);
+		parseProbz(probs, models);
+		printMaxProb();
+	}
 
-	//console.log(probz['path']);
-	let probs = recognize(models, clusters, signal);
-	let index = soWhatIs(probs);
-	// for (let i = 0; i < probs.length; i++)
-	// 	console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	// console.log('(а) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+	// let signal = await(decode('./data/phonemes/Главный.wav'));
+	// let probz = linearRecognize(models, clusters, signal);
+	// console.log(JSON.stringify(probz));
 
-	signal = await(decode('./data/phonemes/г.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(г) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+	// let probs = recognize(models, clusters, signal);
+	// let index = soWhatIs(probs);
 
-	// signal = await(decode('./data/phonemes/glav/и/и133.wav'));
+	// signal = await(decode('./data/phonemes/г.wav'));
 	// probs = recognize(models, clusters, signal);
 	// index = soWhatIs(probs);
 	// for (let i = 0; i < probs.length; i++)
-	// 	console.log('(и) Probability of ' + counter[i]['key'] + ' = ' + probs[i].prob.toFixed(30) + '%');
-	// console.log('(и) Final probability of ' + counter[index]['key'] + ' = ' + probs[index].prob.toFixed(15) + '%');
+	// 	console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(г) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
-	signal = await(decode('./data/phonemes/glav/г/г24.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(г) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/Аудиозапись20/в/в867.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(в) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(в) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/glav/л/л62.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(л) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(л) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/glav/н/н12.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(н) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(н) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/glav/ы/ы685.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(ы) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(ы) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/glav/й/й’320.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(й) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(й) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-
-	signal = await(decode('./data/phonemes/glav/е/е.wav'));
-	probs = recognize(models, clusters, signal);
-	index = soWhatIs(probs);
-	for (let i = 0; i < probs.length; i++)
-		console.log('(е) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
-	console.log('(е) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
-	// signal = await(decode('./data/phonemes/th/а/а36.wav'));
+	// signal = await(decode('./data/phonemes/glav/г/г24.wav'));
 	// probs = recognize(models, clusters, signal);
 	// index = soWhatIs(probs);
 	// for (let i = 0; i < probs.length; i++)
-	// 	console.log('(а) Probability of ' + counter[i]['key'] + ' = ' + probs[i].prob.toFixed(30) + '%');
-	// console.log('(а) Final probability of ' + counter[index]['key'] + ' = ' + probs[index].prob.toFixed(15) + '%');
+	// 	console.log('(г) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(г) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
-	// signal = await(decode('./data/phonemes/th/в/в85.wav'));
+	// signal = await(decode('./data/phonemes/Аудиозапись20/в/в867.wav'));
 	// probs = recognize(models, clusters, signal);
 	// index = soWhatIs(probs);
 	// for (let i = 0; i < probs.length; i++)
-	// 	console.log('(в) Probability of ' + counter[i]['key'] + ' = ' + probs[i].prob.toFixed(30) + '%');
-	// console.log('(в) Final probability of ' + counter[index]['key'] + ' = ' + probs[index].prob.toFixed(15) + '%');
+	// 	console.log('(в) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(в) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 
-	// for (let i = 0; i < Object.keys(models).length; i++)
-	// {
-	// 	console.log(models[Object.keys(models)[i]]);
-	// }
+	// signal = await(decode('./data/phonemes/glav/л/л62.wav'));
+	// probs = recognize(models, clusters, signal);
+	// index = soWhatIs(probs);
+	// for (let i = 0; i < probs.length; i++)
+	// 	console.log('(л) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(л) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+
+	// signal = await(decode('./data/phonemes/glav/н/н12.wav'));
+	// probs = recognize(models, clusters, signal);
+	// index = soWhatIs(probs);
+	// for (let i = 0; i < probs.length; i++)
+	// 	console.log('(н) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(н) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+
+	// signal = await(decode('./data/phonemes/glav/ы/ы685.wav'));
+	// probs = recognize(models, clusters, signal);
+	// index = soWhatIs(probs);
+	// for (let i = 0; i < probs.length; i++)
+	// 	console.log('(ы) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(ы) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+
+	// signal = await(decode('./data/phonemes/glav/й/й’320.wav'));
+	// probs = recognize(models, clusters, signal);
+	// index = soWhatIs(probs);
+	// for (let i = 0; i < probs.length; i++)
+	// 	console.log('(й) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(й) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
+
+	// signal = await(decode('./data/phonemes/glav/е/е.wav'));
+	// probs = recognize(models, clusters, signal);
+	// index = soWhatIs(probs);
+	// for (let i = 0; i < probs.length; i++)
+	// 	console.log('(е) Probability of ' + counter[i]['key'] + ' = ' + 100 * probs[i].prob.toFixed(5) + '%');
+	// console.log('(е) Final probability of ' + counter[index]['key'] + ' = ' + 100 * probs[index].prob.toFixed(5) + '%');
 }
 
 function printMaxProb()
@@ -178,42 +173,33 @@ function printMaxProb()
 			max[0] = probsAll[i].prob;
 			strings = probsAll[i].pth;
 		}
-		if (probsAll[i].pth == 'главны')
-		{
-			stringss = probsAll[i].pth;
-			max[1] = probsAll[i].prob;
-		}
-		if (probsAll[i].pth == 'еглавн')
-		{
-			stringsss = probsAll[i].pth;
-			max[2] = probsAll[i].prob;
-		}
+		// if (probsAll[i].pth == 'главны')
+		// {
+		// 	stringss = probsAll[i].pth;
+		// 	max[1] = probsAll[i].prob;
+		// }
+		// if (probsAll[i].pth == 'еглавн')
+		// {
+		// 	stringsss = probsAll[i].pth;
+		// 	max[2] = probsAll[i].prob;
+		// }
 	}
-	console.log(strings, max[0], stringss, max[1], stringsss, max[2]);
+	console.log(strings, max[0]);
 }
 
 function parseProbz(probz, models)
 {
-	//console.log(probz['path']['г']['path']['л']['path']['а']['path']['в']['path']['н']['path']['ы'])
 	let path = parse(probz['path'], models);
-	// let max = 0;
-	// for (let i = 0; i < probz['path'].length; i++)
-	// {
-	// 	console.log('Path №', i, ': ');
-	// 	console.log(parser(probz['path']['path'], models).path, parser(probz['path']['path'], models).path);
-	// }
 }
 
 function parse(probz, models)
 {	
 	let path = [];
-	//let max = 0;
 	for (let i = 0; i < Object.keys(models).length; i++)
 	{
 		if (probz[Object.keys(models)[i]]['path'] == 'end')
 		{
 			probsAll.push({'pth': probz[Object.keys(models)[i]]['pth'], 'prob': probz[Object.keys(models)[i]]['prob']});
-			//console.log('pth: ', probz[Object.keys(models)[i]]['pth'], 'prob: ', probz[Object.keys(models)[i]]['prob']);
 			path.push({'pth': probz[Object.keys(models)[i]]['pth'], 'prob': probz[Object.keys(models)[i]]['prob']});
 		}
 		else
@@ -222,7 +208,7 @@ function parse(probz, models)
 	return path;
 }
 
-function soWhatIs(probs)
+function soWhatIsRecurs(probs)
 {
 	let max = 0;
 	let currentModel = 0;
@@ -233,6 +219,30 @@ function soWhatIs(probs)
 			currentModel = i;
 		}
 	return currentModel;
+}
+
+function soWhatIs(probs)
+{
+	//console.log(probs);
+
+	let currentModel = '';
+	let maxProb = 1;
+	for (let i = 0; i < probs.length; i++)
+	{
+		let max = 0;
+		let currentMax = '';
+		for (let j = 0; j < probs[i].length; j++)
+		{
+			if (max < probs[i][j]['prob'])
+			{
+				max = probs[i][j]['prob'];
+				currentMax = probs[i][j]['model'];
+			}
+		}
+		currentModel += currentMax;
+		maxProb = maxProb * max;
+	}
+	return {'path': currentModel, 'prob': maxProb};
 }
 
 getTrainedModels();
