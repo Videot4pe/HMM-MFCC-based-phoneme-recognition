@@ -93,9 +93,11 @@ function restoreModel()
 
 async function testModels(models, clusters, counter)
 {
-	let folder = fs.readdirSync('./data/phonemes/test/');
+	let folder = fs.readdirSync('./data/phonemes/testwords/');
 
 	let time = 0;
+	let currentValue, prevValue = '';
+	let tm, count, pr = 0;
 
 	for (let j of folder)
 	{
@@ -103,19 +105,54 @@ async function testModels(models, clusters, counter)
 			continue;
 		let start = new Date().getTime();
 
-		let signal = (await(decode('./data/phonemes/test/' + j)));
+		if (j[1] == '’')
+			currentValue = j[0] + j[1];
+		else
+			currentValue = j[0];
+
+		if (prevValue == currentValue)
+			count++;
+		else
+		{
+			console.log('Среднее время обработки: ' + tm/count + '. Процент: ' + pr/count * 100 + '. Объем: ' + count + '. \n');
+			prevValue = currentValue;
+			tm = 0;
+			count = 1;
+			pr = 0;
+		}
+
+		
+
+		let signal = (await(decode('./data/phonemes/testwords/' + j)));
 		let probs = linearRecognize(models, clusters, signal);
 		let index = soWhatIs(probs);
 		process.stdout.write('(' + j + '): ' + index.path);
 
+
 		all++;
 		if (j[0] == index.path[0])
-			nice++;
+		{
+			if (j[1] == '’')
+			{
+				if (j[1] == index.path[1])
+				{
+					pr++;
+					nice++;
+				}
+			}
+			else
+			{
+				pr++;
+				nice++;
+			}
+		}
 
 		var end = new Date().getTime();
 		console.log('. Время выполнения: ', end-start);
+		tm += end-start;
 		time += end-start;
 	}
+	console.log('Размер выборки: ', all);
 
 	// for (let j of folder)
 	// {
