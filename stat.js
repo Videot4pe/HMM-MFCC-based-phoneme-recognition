@@ -14,7 +14,7 @@ const fs = require('fs');
     	if (!stat.hasOwnProperty(i))
     		stat[i] = {};
 
-    	let phonemes = fs.readdirSync('./data/phonemes/' + i);
+    	let phonemes = fs.readdirSync('./data/phonemes/samples/');
 
     	for (let j of phonemes)
     	{
@@ -26,7 +26,7 @@ const fs = require('fs');
     		if (!eachPhoneme.hasOwnProperty(j))
     			eachPhoneme[j] = 0;
 
-    		let samples = fs.readdirSync('./data/phonemes/' + i + '/' + j);
+    		let samples = fs.readdirSync('./data/phonemes/samples/' + j);
 	        for (let k of samples)
 	        {
     			stat[i][j]++;
@@ -40,82 +40,82 @@ const fs = require('fs');
 	console.log(stat);
 })();
 
-(() => {
-    let audio = fs.readdirSync('./data/words/');
+// (() => {
+//     let audio = fs.readdirSync('./data/words/');
 
-    let stat = {};
-    let counter = 0;
-    let eachWord = {};
+//     let stat = {};
+//     let counter = 0;
+//     let eachWord = {};
 
-    for (let i of audio)
-    {
-        if (i == '.DS_Store')
-            continue;
-        if (!stat.hasOwnProperty(i))
-            stat[i] = {};
+//     for (let i of audio)
+//     {
+//         if (i == '.DS_Store')
+//             continue;
+//         if (!stat.hasOwnProperty(i))
+//             stat[i] = {};
 
-        let words = fs.readdirSync('./data/words/' + i);
+//         let words = fs.readdirSync('./data/words/' + i);
 
-        for (let j of words)
-        {
-            if (j == '.DS_Store')
-                continue;
-            if (!stat[i].hasOwnProperty(j))
-                stat[i][j] = 0;
+//         for (let j of words)
+//         {
+//             if (j == '.DS_Store')
+//                 continue;
+//             if (!stat[i].hasOwnProperty(j))
+//                 stat[i][j] = 0;
 
-            if (!eachWord.hasOwnProperty(j))
-                eachWord[j] = 0;
+//             if (!eachWord.hasOwnProperty(j))
+//                 eachWord[j] = 0;
 
-            let samples = fs.readdirSync('./data/words/' + i + '/' + j);
-            for (let k of samples)
-            {
-                stat[i][j]++;
-                counter++;
-                eachWord[j]++;
-            }
-        }
-    }
-    stat = {audios: stat, words: {eachWord: eachWord, count: counter}};
-    fs.writeFileSync('./data/statsWords.json', JSON.stringify(stat) , 'utf-8');
-    console.log(stat);
-})();
+//             let samples = fs.readdirSync('./data/words/' + i + '/' + j);
+//             for (let k of samples)
+//             {
+//                 stat[i][j]++;
+//                 counter++;
+//                 eachWord[j]++;
+//             }
+//         }
+//     }
+//     stat = {audios: stat, words: {eachWord: eachWord, count: counter}};
+//     fs.writeFileSync('./data/statsWords.json', JSON.stringify(stat) , 'utf-8');
+//     console.log(stat);
+// })();
 
-(() => {
-    let audio = fs.readdirSync('./data/sentences/');
+// (() => {
+//     let audio = fs.readdirSync('./data/sentences/');
 
-    let stat = {};
-    let counter = 0;
-    let eachSentence = {};
+//     let stat = {};
+//     let counter = 0;
+//     let eachSentence = {};
 
-    for (let i of audio)
-    {
-        if (i == '.DS_Store')
-            continue;
-        if (!stat.hasOwnProperty(i))
-            stat[i] = {};
+//     for (let i of audio)
+//     {
+//         if (i == '.DS_Store')
+//             continue;
+//         if (!stat.hasOwnProperty(i))
+//             stat[i] = {};
 
-        let sentences = fs.readdirSync('./data/sentences/' + i);
+//         let sentences = fs.readdirSync('./data/sentences/' + i);
 
-        for (let j of sentences)
-        {
-            if (j == '.DS_Store')
-                continue;
-            if (!stat[i].hasOwnProperty(j))
-                stat[i][j] = 0;
+//         for (let j of sentences)
+//         {
+//             if (j == '.DS_Store')
+//                 continue;
+//             if (!stat[i].hasOwnProperty(j))
+//                 stat[i][j] = 0;
 
-            if (!eachSentence.hasOwnProperty(j))
-                eachSentence[j] = 0;
+//             if (!eachSentence.hasOwnProperty(j))
+//                 eachSentence[j] = 0;
 
-            let samples = fs.readdirSync('./data/sentences/' + i + '/' + j);
-            for (let k of samples)
-            {
-                stat[i][j]++;
-                counter++;
-                eachSentence[j]++;
-            }
-        }
-    }
-    stat = {audios: stat, sentences: {eachSentence: eachSentence, count: counter}};
-    fs.writeFileSync('./data/statSentences.json', JSON.stringify(stat) , 'utf-8');
-    console.log(stat);
-})();
+//             let samples = fs.readdirSync('./data/sentences/' + i + '/' + j);
+//             for (let k of samples)
+//             {
+//                 stat[i][j]++;
+//                 counter++;
+//                 eachSentence[j]++;
+//             }
+//         }
+//     }
+//     stat = {audios: stat, sentences: {eachSentence: eachSentence, count: counter}};
+//     fs.writeFileSync('./data/statSentences.json', JSON.stringify(stat) , 'utf-8');
+//     console.log(stat);
+// })();

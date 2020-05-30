@@ -6,18 +6,23 @@ let HMM = require('./lib/hmm.js');
 const fs = require('fs');
 
 let probsAll = [];
+let nice = 0;
+let all = 0;
+
 async function getTrainedModels()
 {
+	let start = new Date().getTime();
+	console.log('Начало обучения. ');
 	let signal = [];
 	let counter = [];
-	let folders = fs.readdirSync('./data/phonemes/glav/');
+	let folders = fs.readdirSync('./data/phonemes/samples/');
 	let currentStart = 0;
 	for (let i of folders)
 	{
 		if (i == '.DS_Store')
 			continue;
 		counter.push({'key': i, 'start': currentStart, 'end': currentStart});
-		let folder = fs.readdirSync('./data/phonemes/glav/' + i);
+		let folder = fs.readdirSync('./data/phonemes/samples/' + i);
 		for (let j of folder)
 		{
 			if (j == '.DS_Store')
@@ -25,26 +30,35 @@ async function getTrainedModels()
 			counter[counter.length-1]['end']++;
 			currentStart++;
 			//console.log(j + '\n');
-			signal.push(await(decode('./data/phonemes/glav/' + i + '/' + j)));
+			signal.push(await(decode('./data/phonemes/samples/' + i + '/' + j)));
 		}
-		console.log(i + '\n');
+		console.log('Обработана директория фонем ', i + '.');
 	}
 
 	let test = [];
 	for (let i = 0; i < signal.length; i++)
 		for (let j of signal[i])
 		   test.push(j);
+	console.log('Обработка аудиофайлов завершена! Время обработки: ', new Date().getTime() - start, '.');
 
+	let startClusterization = new Date().getTime();
 	let clusters = {};
 	clusters = await kmeans(test);
+	console.log('Кластеризация завершена! Время кластеризации: ', new Date().getTime() - startClusterization, '.');
 
+	let startModelling = new Date().getTime();
 	let models = trainModels(clusters, signal, counter);
-	testModels(models, clusters, counter);
+	console.log('Обучение завершено! Время обучения: ', new Date().getTime() - startModelling, '.');
+	console.log('Полное время работы: ', new Date().getTime() - start, '.');
+	//testModels(models, clusters, counter);
 }
 
 async function getModelsDone()
 {
+	let start = new Date().getTime();
+	console.log('Начало распознавания. ');
 	let restored = restoreModel();
+	console.log('Модели загружены! Время загрузки моделей: ', new Date().getTime() - start, '.');
 	testModels(restored['models'], restored['res'], restored['counter']);
 }
 
@@ -67,7 +81,7 @@ function restoreModel()
 
 	for (let i = 0; i < counter.length; i++)
 	{
-		models[counter[i]['key']] = new HMM(700);
+		models[counter[i]['key']] = new HMM(2000);
 		models[counter[i]['key']].emissionProbs = data[counter[i]['key']].emissionProbs;
 		models[counter[i]['key']].transitionProbs = data[counter[i]['key']].transitionProbs;
 		models[counter[i]['key']].initProbs = data[counter[i]['key']].initProbs;
@@ -80,27 +94,46 @@ function restoreModel()
 async function testModels(models, clusters, counter)
 {
 	let folder = fs.readdirSync('./data/phonemes/test/');
-	// for (let j of folder)
-	// {
-	// 	if (j == '.DS_Store')
-	// 		continue;
-		
-	// 	let signal = (await(decode('./data/phonemes/test/' + j)));
-	// 	let probs = linearRecognize(models, clusters, signal);
-	// 	let index = soWhatIs(probs);
-	// 	console.log('(' + j + ') Final probability of ' + index.path + ' = ' + 100 * index.prob.toFixed(5) + '%');
-	// }
+
+	let time = 0;
 
 	for (let j of folder)
 	{
 		if (j == '.DS_Store')
 			continue;
-		
+		let start = new Date().getTime();
+
 		let signal = (await(decode('./data/phonemes/test/' + j)));
-		let probs = recognizzzer(models, clusters, signal);
-		parseProbz(probs, models);
-		printMaxProb(j);
+		let probs = linearRecognize(models, clusters, signal);
+		let index = soWhatIs(probs);
+		process.stdout.write('(' + j + '): ' + index.path);
+
+		all++;
+		if (j[0] == index.path[0])
+			nice++;
+
+		var end = new Date().getTime();
+		console.log('. Время выполнения: ', end-start);
+		time += end-start;
 	}
+
+	// for (let j of folder)
+	// {
+	// 	let start = new Date().getTime();
+
+	// 	if (j == '.DS_Store')
+	// 		continue;
+		
+	// 	let signal = (await(decode('./data/phonemes/test/' + j)));
+	// 	let probs = recognizzzer(models, clusters, signal);
+	// 	parseProbz(probs, models, j);
+
+	// 	var end = new Date().getTime();
+	// 	console.log('. Время выполнения: ', end-start);
+	// 	time += end-start;
+	// }
+	console.log('Общее время выполнения: ', time);
+	console.log('Процент правильного распознавания: ', (nice / all * 100).toFixed(2));
 }
 
 function printMaxProb(j)
@@ -116,13 +149,23 @@ function printMaxProb(j)
 			string = probsAll[i].pth;
 		}
 	}
-	console.log('(' + j + ') Final probability of ' + string + ' = ' + (100 * max).toFixed(15) + '%');
+	all++;
+	if (j[0] == string)
+		nice++;
+	// console.log(string);
+	process.stdout.write(string);
 	probsAll = [];
 }
 
-function parseProbz(probz, models)
+function parseProbz(probz, models, j)
 {
-	let path = parse(probz['path'], models);
+	process.stdout.write('Семпл (' + j + '): ');
+	// console.log('Семпл (' + j + '): ');
+	for (let i = 0; i < probz.length; i++)
+	{
+		let path = parse(probz[i]['path'], models);
+		printMaxProb(j);
+	}
 }
 
 function parse(probz, models)
