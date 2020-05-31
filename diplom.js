@@ -1,6 +1,6 @@
 let decode = require('./lib/audiodecoder.js');
 const kmeans = require('./lib/kmeans.js');
-const {trainModels, recognize, recognizzzer, linearRecognize} = require('./lib/models.js');
+const {trainModels, recognize, recognizzzer, linearRecognize, recogniz} = require('./lib/models.js');
 let {hmm, train} = require('./lib/hmmusage.js');
 let HMM = require('./lib/hmm.js');
 const fs = require('fs');
@@ -81,7 +81,7 @@ function restoreModel()
 
 	for (let i = 0; i < counter.length; i++)
 	{
-		models[counter[i]['key']] = new HMM(2000);
+		models[counter[i]['key']] = new HMM(2500);
 		models[counter[i]['key']].emissionProbs = data[counter[i]['key']].emissionProbs;
 		models[counter[i]['key']].transitionProbs = data[counter[i]['key']].transitionProbs;
 		models[counter[i]['key']].initProbs = data[counter[i]['key']].initProbs;
@@ -93,11 +93,77 @@ function restoreModel()
 
 async function testModels(models, clusters, counter)
 {
-	let folder = fs.readdirSync('./data/phonemes/testwords/');
+	let folder = fs.readdirSync('./data/phonemes/testforeign/');
 
 	let time = 0;
 	let currentValue, prevValue = '';
 	let tm, count, pr = 0;
+
+	// for (let j of folder)
+	// {
+	// 	if (j == '.DS_Store')
+	// 		continue;
+	// 	let start = new Date().getTime();
+
+	// 	if (j[1] == '’')
+	// 		currentValue = j[0] + j[1];
+	// 	else
+	// 		currentValue = j[0];
+
+	// 	if (prevValue == currentValue)
+	// 		count++;
+	// 	else
+	// 	{
+	// 		console.log('Среднее время обработки: ' + tm/count + '. Процент: ' + pr/count * 100 + '. Объем: ' + count + '. \n');
+	// 		prevValue = currentValue;
+	// 		tm = 0;
+	// 		count = 1;
+	// 		pr = 0;
+	// 	}
+
+		
+
+	// 	let signal = (await(decode('./data/phonemes/testforeign/' + j)));
+	// 	//let probs = linearRecognize(models, clusters, signal);
+	// 	let probs = recognize(models, clusters, signal);
+	// 	//let index = soWhatIs(probs);
+	// 	//process.stdout.write('(' + j + '): ' + index.path);
+	// 	let index = {};
+	// 	index.path = probs;
+	// 	process.stdout.write('(' + j + '): ' + index.path);
+
+	// 	all++;
+	// 	if (j[0] == index.path[0])
+	// 	{
+	// 		if (j[1] == '’')
+	// 		{
+	// 			if (j[1] == index.path[1])
+	// 			{
+	// 				pr++;
+	// 				nice++;
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			pr++;
+	// 			nice++;
+	// 		}
+	// 	}
+
+	// 	var end = new Date().getTime();
+	// 	console.log('. Время выполнения: ', end-start);
+	// 	tm += end-start;
+	// 	time += end-start;
+	// }
+	// console.log('Размер выборки: ', all);
+	// console.log('Общее время выполнения: ', time);
+	// console.log('Процент правильного распознавания: ', (nice / all * 100).toFixed(2));
+
+	folder = fs.readdirSync('./data/phonemes/testwords/');
+
+	// time = 0;
+	// currentValue, prevValue = '';
+	// tm, count, pr = 0;
 
 	for (let j of folder)
 	{
@@ -121,13 +187,14 @@ async function testModels(models, clusters, counter)
 			pr = 0;
 		}
 
-		
-
 		let signal = (await(decode('./data/phonemes/testwords/' + j)));
-		let probs = linearRecognize(models, clusters, signal);
-		let index = soWhatIs(probs);
+		let probs = recogniz(models, clusters, signal);
+		//let probs = recognize(models, clusters, signal);
+		// let index = soWhatIs(probs);
+		// process.stdout.write('(' + j + '): ' + index.path);
+		let index = {};
+		index.path = probs;
 		process.stdout.write('(' + j + '): ' + index.path);
-
 
 		all++;
 		if (j[0] == index.path[0])
@@ -153,24 +220,9 @@ async function testModels(models, clusters, counter)
 		time += end-start;
 	}
 	console.log('Размер выборки: ', all);
-
-	// for (let j of folder)
-	// {
-	// 	let start = new Date().getTime();
-
-	// 	if (j == '.DS_Store')
-	// 		continue;
-		
-	// 	let signal = (await(decode('./data/phonemes/test/' + j)));
-	// 	let probs = recognizzzer(models, clusters, signal);
-	// 	parseProbz(probs, models, j);
-
-	// 	var end = new Date().getTime();
-	// 	console.log('. Время выполнения: ', end-start);
-	// 	time += end-start;
-	// }
 	console.log('Общее время выполнения: ', time);
 	console.log('Процент правильного распознавания: ', (nice / all * 100).toFixed(2));
+
 }
 
 function printMaxProb(j)
